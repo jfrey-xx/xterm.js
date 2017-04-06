@@ -1672,9 +1672,23 @@ Terminal.prototype.evaluateKeyEscapeSequence = function(ev) {
       }
       break;
     default:
-      // a-z and space
       if (ev.ctrlKey && !ev.shiftKey && !ev.altKey && !ev.metaKey) {
-        if (ev.keyCode >= 65 && ev.keyCode <= 90) {
+        // handling special Ctrl cases, using extended xterm syntax.
+        // chrome set correct keyCode no matter the layout, firefox gets key right
+        // FIXME: in the end keycodes migt be buggy in chrome for digits row -- and no differenec between lowercase / uppercase
+        if (ev.keyCode == 222 || ev.key == '"') {
+            result.key = C0.ESC + '[27;5;34~'
+	} else if (ev.keyCode == 226 || ev.key == "«") {
+            result.key = C0.ESC + '[27;5;171~'
+	} else if (ev.keyCode == 57 || ev.key == "»") { // keycode might be buggy with my OS
+            result.key = C0.ESC + '[27;5;187~'
+	} else if (ev.keyCode == 52 || ev.key == "(") {
+            result.key = C0.ESC + '[27;5;40~'
+	} else if (ev.keyCode == 48 || ev.key == "*") {
+            result.key = C0.ESC + '[27;5;42~'
+	} 
+        // a-z and space
+        else if (ev.keyCode >= 65 && ev.keyCode <= 90) {
           result.key = String.fromCharCode(ev.keyCode - 64);
         } else if (ev.keyCode === 32) {
           // NUL
